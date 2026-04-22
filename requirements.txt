@@ -1,0 +1,40 @@
+# Core ML
+numpy>=1.26
+pandas>=2.2
+scikit-learn>=1.4
+xgboost>=2.0
+lightgbm>=4.3
+imbalanced-learn>=0.12
+
+# EDA / visualization
+matplotlib>=3.8
+seaborn>=0.13
+jupyter>=1.0
+ipykernel>=6.29
+
+# Feature engineering
+category-encoders>=2.6
+
+# Model serving
+fastapi>=0.110
+uvicorn[standard]>=0.28
+pydantic>=2.6
+
+# Kafka
+confluent-kafka>=2.3
+
+# Redis
+redis>=5.0
+
+# MLflow
+mlflow>=2.11
+boto3>=1.34       # MLflow → MinIO (S3)
+psycopg2-binary>=2.9
+
+# Monitoring
+evidently>=0.4
+prometheus-fastapi-instrumentator>=6.4
+prometheus-client>=0.20
+
+# Utilities
+python-dotenv>=1.0
