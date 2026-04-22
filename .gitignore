@@ -30,10 +30,10 @@ data/processed/
 mlruns/
 mlartifacts/
 
-# Environment
+# Environment — commit the example, never the real one
 .env
-.env.*
 *.env
+!.env.example
 
 # Docker
 .docker/

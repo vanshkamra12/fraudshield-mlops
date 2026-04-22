@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Scrape our FastAPI scoring service
+  # FastAPI exposes /metrics via prometheus-fastapi-instrumentator
+  - job_name: 'fraudshield-api'
+    static_configs:
+      - targets: ['host.docker.internal:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Scrape Kafka metrics (via JMX exporter — added later)
+  # - job_name: 'kafka'
+  #   static_configs:
+  #     - targets: ['kafka:7071']
