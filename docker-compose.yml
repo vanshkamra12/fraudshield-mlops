@@ -159,6 +159,35 @@ services:
       - fraudshield-net
 
   # ─────────────────────────────────────────
+  # FASTAPI  (real-time scoring service)
+  #   API: http://localhost:8000
+  # ─────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: infra/api/Dockerfile
+    container_name: fraudshield-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-fraudshield}:${POSTGRES_PASSWORD:-fraudshield123}@postgres:5432/fraudshield
+      FEATURE_PIPELINE_PATH: /app/models/feature_pipeline.joblib
+      MODEL_PATH: /app/models/lgbm_model.txt
+    volumes:
+      - ./models:/app/models:ro
+    mem_limit: 1g
+    networks:
+      - fraudshield-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─────────────────────────────────────────
   # AIRFLOW  (retraining pipeline scheduler)
   #   UI: http://localhost:8080
   #   user: admin / password: admin
