@@ -72,7 +72,6 @@ class TransactionInput(BaseModel):
     V13: Optional[float] = None
     V17: Optional[float] = None
     V18: Optional[float] = None
-    V12: Optional[float] = None
     V33: Optional[float] = None
     V34: Optional[float] = None
     V35: Optional[float] = None
