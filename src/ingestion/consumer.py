@@ -45,12 +45,11 @@ def make_producer(broker: str) -> Producer:
 
 
 def score_transaction(api_url: str, payload: dict) -> dict | None:
-    """Call /predict on the FastAPI service. Returns None on error."""
-    # strip internal field before sending to API
+    """Call /score on the FastAPI service with pre-engineered features."""
     actual_label = payload.pop("_actual_label", None)
 
     try:
-        resp = requests.post(f"{api_url}/predict", json=payload, timeout=5)
+        resp = requests.post(f"{api_url}/score", json=payload, timeout=5)
         resp.raise_for_status()
         result = resp.json()
 
