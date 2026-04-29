@@ -1,4 +1,4 @@
-# 🛡️ FraudShield — Real-time Fraud Detection
+# FraudShield — Real-time Fraud Detection
 
 Built this as an end-to-end MLOps project to understand how fraud detection actually works in production — not just training a model and calling it done, but the full pipeline: streaming data, a live scoring API, automated retraining, and monitoring that tells you when the model starts going bad.
 
