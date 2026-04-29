@@ -1,12 +1,12 @@
-# FraudShield — Real-time Fraud Detection
+# 🛡️ FraudShield — Real-time Fraud Detection
 
-Built this as an end-to-end MLOps project to learn how fraud detection actually works in production — not just training a model and calling it done, but the full pipeline: streaming data, a live scoring API, automated retraining, and monitoring that tells you when the model starts going bad.
+Built this as an end-to-end MLOps project to understand how fraud detection actually works in production — not just training a model and calling it done, but the full pipeline: streaming data, a live scoring API, automated retraining, and monitoring that tells you when the model starts going bad.
 
 The dataset is IEEE-CIS (590k real transactions from Kaggle). The model flags fraud in under 10ms p95.
 
 ---
 
-## How it works
+## ⚡ How it works
 
 Transactions come in through Kafka. A consumer picks them up, calls the FastAPI scoring service, gets a fraud score back, and logs everything to Postgres. Grafana shows what's happening live. Airflow handles weekly retraining. Evidently checks daily if the data distribution is shifting.
 
@@ -28,7 +28,7 @@ Prometheus → Grafana dashboard
 
 ---
 
-## Results
+## 📊 Results
 
 Trained on a strict time-based split (no random shuffle — day < 145 for train, rest for test). Numbers are honest.
 
@@ -46,7 +46,7 @@ PR-AUC of 0.516 sounds low but it's on a hard temporal split — no future data 
 
 ---
 
-## Stack
+## 🧰 Stack
 
 | What | Tool |
 |------|------|
@@ -63,7 +63,7 @@ PR-AUC of 0.516 sounds low but it's on a hard temporal split — no future data 
 
 ---
 
-## Project structure
+## 📁 Project structure
 
 ```
 fraudshield/
@@ -80,7 +80,7 @@ fraudshield/
 │   │   ├── train.py              LightGBM + MLflow
 │   │   └── evaluate.py           metrics, plots
 │   ├── api/
-│   │   ├── app.py                FastAPI, /predict /score /feedback /metrics
+│   │   ├── app.py                FastAPI — /predict /score /feedback /metrics
 │   │   ├── models.py             SQLAlchemy ORM
 │   │   └── schemas.py            Pydantic schemas
 │   ├── ingestion/
@@ -97,14 +97,14 @@ fraudshield/
 │   ├── prometheus/prometheus.yml
 │   └── postgres/init.sql
 ├── docs/                         architecture diagram, EDA charts
-├── models/                       lgbm_model.txt (committed), pipeline.joblib
+├── models/                       lgbm_model.txt, feature_pipeline.joblib
 ├── docker-compose.yml            all 10 services
 └── requirements.txt
 ```
 
 ---
 
-## Running it
+## 🚀 Running it
 
 **Prerequisites:** Docker Desktop, Python 3.11+, the IEEE-CIS dataset from Kaggle.
 
@@ -147,16 +147,16 @@ python3 -m src.ingestion.producer --rate 30 --max 500
 **Open the dashboards:**
 | Service | URL | Login |
 |---------|-----|-------|
-| Grafana | http://localhost:3000 | admin / admin |
-| MLflow | http://localhost:5001 | — |
-| Airflow | http://localhost:8080 | admin / admin |
-| API docs | http://localhost:8000/docs | — |
+| 📈 Grafana | http://localhost:3000 | admin / admin |
+| 🧪 MLflow | http://localhost:5001 | — |
+| 🌀 Airflow | http://localhost:8080 | admin / admin |
+| 🔌 API docs | http://localhost:8000/docs | — |
 
 ---
 
-## Testing a single transaction
+## 🧪 Testing a single transaction
 
-The API has an interactive docs page at http://localhost:8000/docs — just open it, click `/score`, and paste in some transaction data.
+The API has an interactive docs page at http://localhost:8000/docs — open it, click `/score`, paste in some transaction data, hit Execute.
 
 Or from the terminal:
 ```bash
@@ -190,7 +190,7 @@ Score above 0.7379 → fraud flag. Below → legit.
 
 ---
 
-## Feature engineering
+## 🔧 Feature engineering
 
 434 raw columns → 113 features. Main things the pipeline does:
 
@@ -206,18 +206,18 @@ Everything is fit on train, applied to test — no leakage.
 
 ---
 
-## Retraining
+## 🔄 Retraining
 
 Two Airflow DAGs in `src/orchestration/`:
 
-`fraudshield_retrain` runs every Sunday at 02:00 UTC:
+`fraudshield_retrain` — runs every Sunday at 02:00 UTC:
 1. checks if there are 5000+ new labelled predictions since last run
 2. re-fits the feature pipeline on fresh data
 3. trains a new LightGBM model, logs to MLflow
 4. compares new PR-AUC vs current champion in registry
 5. promotes to Production only if the challenger wins
 
-`fraudshield_monitor` runs daily at 06:00 UTC:
+`fraudshield_monitor` — runs daily at 06:00 UTC:
 1. pulls last 24h of predictions from Postgres
 2. runs Evidently drift report vs training reference
 3. logs live PR-AUC on labelled predictions
@@ -225,10 +225,16 @@ Two Airflow DAGs in `src/orchestration/`:
 
 ---
 
-## What I'd add with more time
+## 🗺️ Architecture
+
+![FraudShield Architecture](docs/architecture.png)
+
+---
+
+## 📌 What I'd add with more time
 
 - proper unit tests (pytest)
 - Redis feature cache so the pipeline doesn't recompute on every request
 - more aggressive feature engineering — card-level aggregates, velocity features
-- a proper CI/CD pipeline (GitHub Actions → Docker build → deploy)
-- load testing to find actual throughput ceiling
+- CI/CD pipeline (GitHub Actions → Docker build → deploy)
+- load testing to find the actual throughput ceiling
