@@ -23,6 +23,7 @@ sqlalchemy>=2.0
 
 # Kafka
 confluent-kafka>=2.3
+requests>=2.31
 
 # Redis
 redis>=5.0

@@ -188,6 +188,31 @@ services:
       retries: 3
 
   # ─────────────────────────────────────────
+  # KAFKA CONSUMER  (scores transactions from stream)
+  # ─────────────────────────────────────────
+  consumer:
+    build:
+      context: .
+      dockerfile: infra/api/Dockerfile
+    container_name: fraudshield-consumer
+    depends_on:
+      kafka:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-fraudshield}:${POSTGRES_PASSWORD:-fraudshield123}@postgres:5432/fraudshield
+      FEATURE_PIPELINE_PATH: /app/models/feature_pipeline.joblib
+      MODEL_PATH: /app/models/lgbm_model.txt
+    volumes:
+      - ./models:/app/models:ro
+    command: python -m src.ingestion.consumer --broker kafka:9092 --api http://api:8000
+    mem_limit: 512m
+    restart: on-failure
+    networks:
+      - fraudshield-net
+
+  # ─────────────────────────────────────────
   # AIRFLOW  (retraining pipeline scheduler)
   #   UI: http://localhost:8080
   #   user: admin / password: admin
